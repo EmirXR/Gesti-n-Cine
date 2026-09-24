@@ -1,0 +1,114 @@
+<div>
+  <h2>Asignación de Películas a Salas</h2>
+
+  <div class="card mb-4 shadow-sm mt-4">
+    <div class="card-header bg-info text-white fw-bold">Consultar Estado de Sala</div>
+    <div class="card-body">
+      <div class="row g-2">
+        <div class="col-md-8">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Escribe el nombre de la sala..." 
+            [(ngModel)]="nombreSalaBuscar"
+            (keyup.enter)="consultarSala()">
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-info text-white w-100 fw-bold" (click)="consultarSala()">Consultar Estado</button>
+        </div>
+      </div>
+
+      <div *ngIf="salas.length > 0" class="mt-3">
+        <small class="text-muted d-block mb-2 fw-bold">Consultas Salas:</small>
+        <div class="d-flex flex-wrap gap-2">
+          <button 
+            *ngFor="let s of salas" 
+            type="button" 
+            class="btn btn-outline-info btn-sm rounded-pill"
+            (click)="consultarSalaDirecta(s.nombre)">
+            {{ s.nombre }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="resultadoConsultaSala" class="alert alert-secondary mt-3 mb-0">
+        <strong>Estado:</strong> {{ resultadoConsultaSala.mensaje }} 
+        <span class="badge bg-dark ms-2">Películas asignadas: {{ resultadoConsultaSala.cantidadPeliculas }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white fw-bold">Nueva Asignación</div>
+    <div class="card-body">
+      <form (ngSubmit)="asignar()">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Sala de Cine</label>
+            <select class="form-select" [(ngModel)]="idSalaCine" name="idSalaCine" required>
+              <option value="0" disabled>Seleccione una sala</option>
+              <option *ngFor="let s of salas" [value]="s.idSala">{{ s.nombre }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Película</label>
+            <select class="form-select" [(ngModel)]="idPelicula" name="idPelicula" required>
+              <option value="0" disabled>Seleccione una película</option>
+              <option *ngFor="let p of peliculas" [value]="p.idPelicula">{{ p.nombre }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha Publicación</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="fechaPublicacion" name="fechaPublicacion" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha Fin</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="fechaFin" name="fechaFin" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Asignar Película</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white fw-bold">
+      Asignaciones Registradas
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Sala</th>
+              <th>Película</th>
+              <th>Fecha Publicación</th>
+              <th>Fecha Fin</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of asignaciones">
+              <td>{{ a.salaCine?.nombre || a.nombreSala || 'S/D' }}</td>
+              <td>{{ a.pelicula?.nombre || a.nombrePelicula || 'S/D' }}</td>
+              <td>{{ a.fechaPublicacion | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ a.fechaFin | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="text-center">
+                <button 
+                  class="btn btn-outline-danger btn-sm" 
+                  (click)="eliminarAsignacion(a.idSalaCine, a.idPelicula)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="asignaciones.length === 0">
+              <td colspan="5" class="text-center text-muted py-3">
+                No hay asignaciones registradas.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
